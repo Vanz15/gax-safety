@@ -1,0 +1,18 @@
+# Datasets (external HDD)
+data/
+*.jpg
+*.png
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# System
+.DS_Store
+Thumbs.db
