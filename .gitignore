@@ -1,0 +1,13 @@
+# datasets and images
+dataset/
+stage_2_test_images/
+stage_2_train_images/
+
+# virtual environment
+venv/
+
+# large medical files
+*.dcm
+*.zip
+*.tar
+*.gz
