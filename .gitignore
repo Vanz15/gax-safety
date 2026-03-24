@@ -2,7 +2,11 @@
 dataset/
 stage_2_test_images/
 stage_2_train_images/
-
+dicom_dataset/
+jpeg_dataset/
+masked_dataset/
+checkpoints/
+results/
 # virtual environment
 venv/
 
