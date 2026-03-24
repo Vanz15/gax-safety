@@ -33,3 +33,6 @@ venv/
 # System
 .DS_Store
 Thumbs.db
+
+#workspace
+*.workspace
