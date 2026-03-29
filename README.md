@@ -67,7 +67,7 @@ python generate_gax.py --model_path checkpoints/best_resnet34_v4.pth --output_di
 Calculate the shortcut learning "cheating score" by analyzing how much attribution falls outside the ground truth lung masks.
 
 ```bash
-python compute_cheating_score.py --gax_dir results/resnet34_v4/gax_images --output_csv results/resnet34_v4/cheating_scores.csv
+python compute_cheating_score.py --model resnet34_v4 --gax_dir results/resnet34_v4/gax_images --output_csv results/resnet34_v4/cheating_scores.csv
 ```
 
 ### 3. Visualize the Results
