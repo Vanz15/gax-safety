@@ -60,7 +60,7 @@ def run_batch_gax(model_path, output_dir):
     N_ITER = 150
     LR = 0.1
     IMG_SIZE = (224, 224)
-    MAX_IMAGES_PER_CLASS = 100
+    # MAX_IMAGES_PER_CLASS = 100 uncomment this line to run in batches
     
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -78,12 +78,14 @@ def run_batch_gax(model_path, output_dir):
         target_label = 1 if class_name.lower() == 'pneumonia' else 0
         
         # Get list of images
-        all_img_files = [f for f in os.listdir(data_dir) if f.endswith(('.jpeg', '.jpg', '.png'))]
+        # all_img_files = [f for f in os.listdir(data_dir) if f.endswith(('.jpeg', '.jpg', '.png'))]
         
-        # Apply the limit here
-        img_files = all_img_files[:MAX_IMAGES_PER_CLASS]
+        # # Apply the limit here
+        # img_files = all_img_files[:MAX_IMAGES_PER_CLASS]
+        img_files = [f for f in os.listdir(data_dir) if f.endswith(('.jpeg', '.jpg', '.png'))]
         print(f"\nProcessing Class: {class_name} | Target Label: {target_label}")
-        print(f"Found {len(all_img_files)} images total. Limited to processing: {len(img_files)} images.")
+        #print(f"Found {len(all_img_files)} images total. Limited to processing: {len(img_files)} images.")
+        print(f"Found {len(img_files)} images total. Processing all {len(img_files)} images.")
         
         # Process each image with a progress bar
         for img_name in tqdm(img_files, desc=f"Generating GAX ({class_name})"):
