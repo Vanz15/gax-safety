@@ -36,12 +36,14 @@ def main():
     parser = argparse.ArgumentParser(description="Compute cheating scores for a given model's GAX output")
     parser.add_argument("--gax_dir", type=str, default="results/resnet34_v3/gax_images", help="Directory containing the GAX heatmaps")
     parser.add_argument("--output_csv", type=str, default="results/resnet34_v3/cheating_scores.csv", help="Path to save the results CSV")
+    parser.add_argument("--model", type=str, default="resnet34_v3", help="Name of the model being evaluated")
     args = parser.parse_args()
 
     # --- Configurations ---
     MASK_DIR = "masked_dataset/test"
     GAX_DIR = args.gax_dir
     OUTPUT_CSV = args.output_csv
+    MODEL_NAME = args.model_name
     
     os.makedirs(os.path.dirname(OUTPUT_CSV) or ".", exist_ok=True)
     results = []
@@ -53,7 +55,7 @@ def main():
         
     class_folders = [f for f in os.listdir(MASK_DIR) if os.path.isdir(os.path.join(MASK_DIR, f))]
     
-    print("Starting Cheating Score calculation...")
+    print(f"Starting Cheating Score calculation for model: {MODEL_NAME}...")
     
     for class_name in class_folders:
         class_path = os.path.join(MASK_DIR, class_name)
@@ -90,10 +92,11 @@ def main():
                 # 5. Compute the Math
                 cheating_score = compute_score(positive_heatmap, binary_mask_resized)
                 
-                # Flag it based on the 25% threshold
+                # Flag it based on the n% threshold
                 is_cheating = cheating_score > 0.50
                 
                 results.append({
+                    'model_name': MODEL_NAME,
                     'image_name': img_name,
                     'true_class': class_name,
                     'cheating_score': round(cheating_score, 4),
@@ -114,7 +117,7 @@ def main():
         cheating_percentage = (cheating_count / total_images) * 100 if total_images > 0 else 0
         average_cheating_score = df['cheating_score'].mean()
         
-        print(f"\n--- Final Summary ---")
+        print(f"\n--- Final Summary ({MODEL_NAME}) ---")
         print(f"Total Images Scored: {total_images}")
         
         class_counts = df['true_class'].value_counts()
@@ -129,6 +132,27 @@ def main():
             print(f"  - {cls}: {c_count} images")
             
         print(f"Average Model Cheating Score: {average_cheating_score:.4f} ({average_cheating_score * 100:.1f}%)")
+
+        summary_data = [
+            {"Metric": "Model Evaluated", "Value": MODEL_NAME},
+            {"Metric": "Total Images Scored", "Value": total_images},
+            {"Metric": "Total Shortcut Learning", "Value": cheating_count},
+            {"Metric": "Shortcut Learning Percentage (%)", "Value": round(cheating_percentage, 2)},
+            {"Metric": "Average Cheating Score", "Value": round(average_cheating_score, 4)}
+        ]
+        
+        for cls in class_counts.keys():
+            summary_data.append({"Metric": f"Total {cls} Images", "Value": class_counts[cls]})
+            summary_data.append({"Metric": f"Shortcut Learning in {cls}", "Value": cheating_class_counts.get(cls, 0)})
+
+        summary_df = pd.DataFrame(summary_data)
+        
+        
+        actual_dir = os.path.dirname(OUTPUT_CSV) or "."
+        summary_path = os.path.join(actual_dir, 'summary_cheating_scores.csv')
+        
+        summary_df.to_csv(summary_path, index=False)
+        print(f"Summary metrics successfully saved to {summary_path}")
     else:
         print("\nNo matching GAX and Mask files found. Ensure your batch scripts completed successfully.")
 
