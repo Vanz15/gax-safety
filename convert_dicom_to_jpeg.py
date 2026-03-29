@@ -5,7 +5,7 @@ import numpy as np
 import pydicom
 from PIL import Image
 
-INPUT_ROOT = "dataset"       # has train/val/test
+INPUT_ROOT = "dicom_dataset"       # has train/val/test
 OUTPUT_ROOT = "jpeg_dataset" # new root with JPEGs
 
 CLASSES = ["normal", "pneumonia"]
