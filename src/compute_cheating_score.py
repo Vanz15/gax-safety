@@ -40,13 +40,27 @@ def main():
     args = parser.parse_args()
 
     # --- Configurations ---
-    MASK_DIR = "masked_dataset/test"
+    # MASK_DIR = "masked_dataset/test"
+    MASK_DIR = "/content/drive/Shareddrives/thesis/masked_dataset/test"
     GAX_DIR = args.gax_dir
     OUTPUT_CSV = args.output_csv
-    MODEL_NAME = args.model_name
+    MODEL_NAME = args.model
     
     os.makedirs(os.path.dirname(OUTPUT_CSV) or ".", exist_ok=True)
     results = []
+    processed_images = set()
+
+    if os.path.exists(OUTPUT_CSV):
+        print(f"Found existing results file at {OUTPUT_CSV}. Checking for previously processed images...")
+        try:
+            existing_df = pd.read_csv(OUTPUT_CSV)
+            if 'image_name' in existing_df.columns:
+                processed_images = set(existing_df['image_name'].tolist())
+                # Load existing results so the final summary includes both old and new data
+                results = existing_df.to_dict('records') 
+                print(f"Successfully loaded {len(processed_images)} existing records. These will be skipped to save time.")
+        except Exception as e:
+            print(f"Warning: Could not read existing CSV to resume. Starting fresh. Error: {e}")
     
     # Find the class folders (PNEUMONIA, NORMAL)
     if not os.path.exists(MASK_DIR):
@@ -62,6 +76,10 @@ def main():
         img_files = [f for f in os.listdir(class_path) if f.endswith(('.jpeg', '.jpg', '.png'))]
         
         for img_name in tqdm(img_files, desc=f"Scoring {class_name}"):
+            # ---Skip if already processed ---
+            if img_name in processed_images:
+                continue
+
             mask_path = os.path.join(class_path, img_name)
             
             # Reconstruct the exact GAX filename your previous script generated

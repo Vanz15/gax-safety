@@ -2,7 +2,7 @@ import os
 import random
 import shutil
 
-# Base directory where your current folders live
+# Base directory
 BASE_DIR = "dataset"
 CLASSES = ["normal", "pneumonia"]
 

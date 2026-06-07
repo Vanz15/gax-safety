@@ -1,4 +1,6 @@
 import pandas as pd
+import os
+import shutil
 
 # Load detailed class info (Normal, Lung Opacity, No Lung Opacity / Not Normal)
 df = pd.read_csv("stage_2_detailed_class_info.csv")
@@ -24,10 +26,6 @@ binary_labels = binary_labels[binary_labels["label"].notna()]
 binary_labels.to_csv("rsna_binary_labels.csv", index=False)
 
 print(binary_labels["label"].value_counts())
-
-import os
-import shutil
-import pandas as pd
 
 labels = pd.read_csv("rsna_binary_labels.csv")
 
